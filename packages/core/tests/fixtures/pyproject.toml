@@ -1,0 +1,7 @@
+[project]
+name = "configshape"
+version = "0.1.0"
+description = "Query and patch configs"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

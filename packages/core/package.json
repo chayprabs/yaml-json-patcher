@@ -1,0 +1,50 @@
+{
+  "name": "@configshape/yaml-json-patcher",
+  "version": "0.1.0",
+  "description": "Parse, query, and patch YAML, JSON, TOML and XML with comment preservation",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./jq": {
+      "types": "./dist/engines/jq.d.ts",
+      "import": "./dist/engines/jq.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "size-limit": "size-limit"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "fast-xml-parser": "^5.2.5",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "size-limit": "^11.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "size-limit": [
+    {
+      "name": "core",
+      "path": "dist/index.js",
+      "limit": "90 KB",
+      "gzip": true
+    }
+  ]
+}
