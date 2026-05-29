@@ -14,6 +14,7 @@ import { useEvaluate } from "./hooks/useEvaluate";
 import { cn } from "./lib/utils";
 import { useAppStore, type Mode } from "./store";
 import { SamplePicker } from "./components/SamplePicker";
+import { DiffViewer } from "./components/DiffViewer";
 
 const MonacoEditor = lazy(() => import("./components/MonacoEditor"));
 
@@ -32,6 +33,7 @@ export default function App() {
   const store = useAppStore();
   useEvaluate();
   const [showRestore, setShowRestore] = useState(false);
+  const [diffAfter, setDiffAfter] = useState("");
   const detected = store.source.trim() ? detectFormat(store.source) : "yaml";
 
   useEffect(() => {
@@ -197,7 +199,14 @@ export default function App() {
               onChange={(e) => store.setPatchText(e.target.value)}
             />
           )}
-          {store.mode === "validate" && (
+          {store.mode === "diff" && (
+            <textarea
+              className="min-h-24 border-b border-[var(--border)] bg-[var(--panel)] px-3 py-2 font-mono text-sm outline-none"
+              placeholder="After document…"
+              value={diffAfter}
+              onChange={(e) => setDiffAfter(e.target.value)}
+            />
+          )}
             <textarea
               className="min-h-24 border-b border-[var(--border)] bg-[var(--panel)] px-3 py-2 font-mono text-sm outline-none"
               placeholder="JSON Schema…"
@@ -236,6 +245,9 @@ export default function App() {
       </main>
 
       <footer className="border-t border-[var(--border)]">
+        {store.mode === "diff" && diffAfter && (
+          <DiffViewer before={store.source} after={diffAfter} />
+        )}
         <SamplePicker />
         {store.logs.length > 0 && (
           <div className="max-h-24 overflow-auto px-4 py-2 font-mono text-xs text-red-500">
