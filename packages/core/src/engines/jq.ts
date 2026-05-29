@@ -12,7 +12,7 @@ async function loadJq(): Promise<typeof jqModule> {
 
 export async function runJq(json: unknown, filter: string): Promise<unknown> {
   const jq = await loadJq();
-  return jq.json(json, filter);
+  return jq.json(json as string | object, filter);
 }
 
 export function resetJqCache(): void {

@@ -1,0 +1,12 @@
+replicaCount: 3
+
+image:
+  tag: "2.0"
+
+service:
+  type: LoadBalancer
+  port: 443
+
+ingress:
+  enabled: true
+  host: prod.example.com

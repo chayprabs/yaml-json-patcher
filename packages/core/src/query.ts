@@ -32,12 +32,19 @@ async function queryJq(doc: Doc, expr: string): Promise<QueryResult> {
 }
 
 function queryJsonPath(doc: Doc, expr: string): QueryResult {
-  const value = JSONPath({ path: expr, json: doc.json, wrap: false });
+  const value = JSONPath({
+    path: expr,
+    json: doc.json as string | number | boolean | object | null,
+    wrap: false,
+  });
   return { ok: true, value };
 }
 
 function queryJmesPath(doc: Doc, expr: string): QueryResult {
-  const value = jmespath.search(doc.json, expr);
+  const value = jmespath.search(
+    doc.json as Parameters<typeof jmespath.search>[0],
+    expr,
+  );
   return { ok: true, value };
 }
 

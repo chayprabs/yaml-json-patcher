@@ -1,4 +1,4 @@
-import { applyPatch, compare, validate } from "fast-json-patch";
+import { applyPatch, compare, validate, type Operation } from "fast-json-patch";
 import type { Doc, JsonPatchOperation, MergeResult, MergeStrategy } from "./types.js";
 import { parse, serialize } from "./parse.js";
 import * as jsonFmt from "./formats/json.js";
@@ -24,11 +24,11 @@ function updateDocJson(doc: Doc, json: unknown): Doc {
 }
 
 export function applyJsonPatch(doc: Doc, patch: JsonPatchOperation[]): Doc {
-  const errors = validate(patch, cloneJson(doc.json));
+  const errors = validate(patch as Operation[], cloneJson(doc.json));
   if (errors) {
     throw new Error(errors.message ?? "Invalid JSON Patch");
   }
-  const result = applyPatch(cloneJson(doc.json), patch, true, false).newDocument;
+  const result = applyPatch(cloneJson(doc.json), patch as Operation[], true, false).newDocument;
   return updateDocJson(doc, result);
 }
 
@@ -68,7 +68,10 @@ function mergeDeep(
 }
 
 export function generatePatch(before: Doc, after: Doc): JsonPatchOperation[] {
-  return compare(cloneJson(before.json), cloneJson(after.json)) as JsonPatchOperation[];
+  return compare(
+    cloneJson(before.json) as object,
+    cloneJson(after.json) as object,
+  ) as JsonPatchOperation[];
 }
 
 export function mergeDocs(docs: Doc[], strategy: MergeStrategy): MergeResult {

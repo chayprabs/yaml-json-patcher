@@ -1,4 +1,4 @@
-import type { ParseError } from "./types.js";
+import type { ParseError } from "../types.js";
 
 export interface JsonAst {
   kind: "json";

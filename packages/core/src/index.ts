@@ -19,3 +19,5 @@ export {
   mergeDocs,
   applyConflictResolution,
 } from "./patch.js";
+export { validateWithSchema } from "./validate.js";
+export { unifiedDiff, sideBySideDiff } from "./diff.js";
