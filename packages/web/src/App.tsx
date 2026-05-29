@@ -207,6 +207,7 @@ export default function App() {
               onChange={(e) => setDiffAfter(e.target.value)}
             />
           )}
+          {store.mode === "validate" && (
             <textarea
               className="min-h-24 border-b border-[var(--border)] bg-[var(--panel)] px-3 py-2 font-mono text-sm outline-none"
               placeholder="JSON Schema…"
