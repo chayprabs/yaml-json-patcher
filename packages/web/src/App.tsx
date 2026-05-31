@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { LegalPage } from "./pages/LegalPage";
 import { SeoLandingPage } from "./pages/SeoLandingPage";
-import { privacyPolicy, termsAndConditions } from "./content/legal";
+import { privacyPolicy, softwareLicense, termsAndConditions } from "./content/legal";
 
 const SEO_SLUGS = [
   "jq-online",
@@ -22,6 +22,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/privacy" element={<LegalPage title="Privacy Policy" body={privacyPolicy} />} />
         <Route path="/terms" element={<LegalPage title="Terms & Conditions" body={termsAndConditions} />} />
+        <Route path="/license" element={<LegalPage title="License" body={softwareLicense} />} />
         {SEO_SLUGS.map((slug) => (
           <Route key={slug} path={`/${slug}`} element={<SeoLandingPage />} />
         ))}

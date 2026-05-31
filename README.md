@@ -96,6 +96,11 @@ pnpm build
 
 `yaml` `json` `toml` `xml` `jq` `yq` `jsonpath` `jmespath` `json-patch` `kubernetes-yaml` `browser-only` `wasm` `online-tool`
 
-## License
+## License & legal
 
-MIT — see [LICENSE](LICENSE). [Privacy](https://github.com/chayprabs/yaml-json-patcher/blob/main/packages/web/src/content/legal.ts) and [Terms](https://github.com/chayprabs/yaml-json-patcher/blob/main/packages/web/src/content/legal.ts) in the web app at `/privacy` and `/terms`.
+- **Software:** [MIT License](LICENSE) — Copyright (c) 2026 Chaitanya Prabuddha
+- **Third-party notices:** [NOTICE.md](NOTICE.md)
+- **Disclaimer:** [DISCLAIMER.md](DISCLAIMER.md)
+- **In the web app:** [Privacy Policy](/privacy), [Terms & Conditions](/terms), [License](/license) (paths on deployed site)
+
+Use of the hosted tool is subject to the Terms and Privacy Policy. No warranty is provided; see DISCLAIMER.md.

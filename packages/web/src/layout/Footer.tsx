@@ -10,9 +10,15 @@ export function Footer() {
         <Link to="/terms" className="hover:text-slate-900 hover:underline">
           Terms &amp; Conditions
         </Link>
+        <Link to="/license" className="hover:text-slate-900 hover:underline">
+          License
+        </Link>
       </nav>
       <p className="mt-2 text-xs text-slate-500">
-        © {new Date().getFullYear()} ConfigShape. MIT License.
+        © {new Date().getFullYear()} Chaitanya Prabuddha · ConfigShape ·{" "}
+        <Link to="/license" className="hover:underline">
+          MIT License
+        </Link>
       </p>
     </footer>
   );

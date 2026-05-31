@@ -18,11 +18,16 @@ test.describe("ConfigShape playground", () => {
     await expect(page.getByLabel("Result output")).toContainText("nginx", { timeout: 45000 });
   });
 
-  test("privacy and terms pages", async ({ page }) => {
+  test("privacy, terms, and license pages", async ({ page }) => {
     await page.goto("/privacy");
     await expect(page.getByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+    await expect(page.getByText("locally in your browser", { exact: false })).toBeVisible();
     await page.goto("/terms");
     await expect(page.getByRole("heading", { name: "Terms & Conditions" })).toBeVisible();
+    await expect(page.getByText("AS IS", { exact: false })).toBeVisible();
+    await page.goto("/license");
+    await expect(page.getByRole("heading", { name: "License", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "MIT License" })).toBeVisible();
   });
 
   test("SEO landing jq-online", async ({ page }) => {
