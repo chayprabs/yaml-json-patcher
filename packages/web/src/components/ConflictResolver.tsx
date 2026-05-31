@@ -18,8 +18,11 @@ export function ConflictResolver() {
     const conflict = conflicts.find((c) => c.path === path);
     if (!conflict) return;
     if (choice === "base") resolutions[path] = conflict.values[0];
-    else if (choice === "incoming") resolutions[path] = conflict.values[1];
-    else resolutions[path] = conflict.values[choice] ?? conflict.values[conflict.pickedIndex];
+    else if (choice === "incoming") {
+      resolutions[path] = conflict.values[conflict.pickedIndex] ?? conflict.values[conflict.values.length - 1];
+    } else {
+      resolutions[path] = conflict.values[choice] ?? conflict.values[conflict.pickedIndex];
+    }
     const merged = applyConflictResolution(base, [conflict], resolutions);
     setOutput(serialize(merged));
     setConflicts(conflicts.filter((c) => c.path !== path));

@@ -97,9 +97,10 @@ describe("F3 patch and merge", () => {
     expect(errors[0]!.message.length).toBeGreaterThan(0);
   });
 
-  it("validateSyntax accepts many malformed YAML strings without error (yaml leniency)", () => {
+  it("validateSyntax reports unclosed brackets in YAML", () => {
     const errors = validateSyntax("replicaCount: [unclosed\n", "yaml");
-    expect(errors).toEqual([]);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]!.message).toMatch(/bracket/i);
   });
 
   it("validateWithSchema accepts valid document against schema", () => {

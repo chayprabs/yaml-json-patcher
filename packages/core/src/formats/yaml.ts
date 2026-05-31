@@ -37,12 +37,29 @@ export function serializeYaml(ast: YamlAst): string {
 }
 
 export function validateYaml(input: string): ParseError[] {
+  const bracketErr = findUnclosedBracketError(input);
+  if (bracketErr) return [bracketErr];
   try {
-    parseAllDocuments(input, PARSE_OPTS);
+    const docs = parseAllDocuments(input, PARSE_OPTS);
+    for (const doc of docs) {
+      if (doc.errors.length > 0) {
+        return doc.errors.map((e) => yamlErrorToParseError(e));
+      }
+    }
     return [];
   } catch (err) {
     return [yamlErrorToParseError(err)];
   }
+}
+
+function findUnclosedBracketError(input: string): ParseError | null {
+  const open = (input.match(/\[/g) ?? []).length;
+  const close = (input.match(/\]/g) ?? []).length;
+  if (open > close) {
+    const line = input.slice(0, input.indexOf("[")).split("\n").length;
+    return { line, column: 1, message: "Unclosed [ bracket in YAML" };
+  }
+  return null;
 }
 
 function yamlErrorToParseError(err: unknown): ParseError {

@@ -16,7 +16,7 @@ export async function loadSample(key: string, store: AppState) {
       const text = await fetchText("package.json");
       store.setSource(text);
       store.setMode("query");
-      store.setExpression(".scripts");
+      store.setExpression("$.scripts");
       store.setEngine("jsonpath");
       break;
     }
@@ -32,12 +32,13 @@ export async function loadSample(key: string, store: AppState) {
       store.setSource(await fetchText("github-actions.yml"));
       store.setMode("query");
       store.setExpression(".jobs");
+      store.setEngine("jq");
       break;
     }
     case "pyproject": {
       store.setSource(await fetchText("pyproject.toml"));
       store.setMode("query");
-      store.setExpression("[project]");
+      store.setExpression("$.project");
       store.setEngine("jsonpath");
       break;
     }
@@ -51,14 +52,14 @@ export async function loadSample(key: string, store: AppState) {
     case "cargo": {
       store.setSource(await fetchText("Cargo.toml"));
       store.setMode("query");
-      store.setExpression("[package]");
+      store.setExpression("$.package");
       store.setEngine("jsonpath");
       break;
     }
     case "atom": {
       store.setSource(await fetchText("atom-feed.xml"));
       store.setMode("query");
-      store.setExpression("$.feed.entry[*].title");
+      store.setExpression("$.feed.entry.title");
       store.setEngine("jsonpath");
       break;
     }

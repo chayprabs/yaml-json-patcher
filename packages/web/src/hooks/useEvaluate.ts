@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import {
-  applyJsonPatch,
-  applyMergePatch,
+  applyPatchDocument,
   detectFormat,
   generatePatch,
   mergeDocs,
@@ -16,6 +15,11 @@ import {
 import { useAppStore } from "../store";
 
 const DEBOUNCE_MS = 150;
+
+function formatQueryOutput(value: unknown): string {
+  if (value === undefined) return "null";
+  return JSON.stringify(value, null, 2);
+}
 
 export function useEvaluate() {
   const state = useAppStore();
@@ -56,16 +60,17 @@ export function useEvaluate() {
           setOutput("");
           return;
         }
-        setOutput(JSON.stringify(result.value, null, 2));
+        if (result.value === null && expression.trim()) {
+          addLog("Query returned no matches");
+        }
+        setOutput(formatQueryOutput(result.value));
         return;
       }
 
       if (mode === "patch") {
         const doc = parse(source, fmt);
-        const patch = JSON.parse(patchText);
-        const patched = Array.isArray(patch)
-          ? applyJsonPatch(doc, patch)
-          : applyMergePatch(doc, patch);
+        const patch = JSON.parse(patchText) as unknown;
+        const patched = applyPatchDocument(doc, patch);
         setOutput(serialize(patched));
         return;
       }
@@ -114,11 +119,13 @@ export function useEvaluate() {
 
       if (mode === "diff") {
         if (!diffAfter.trim()) {
-          addLog("Paste an “after” document to generate a patch");
+          addLog('Paste an "after" document to generate a patch');
+          setOutput("");
           return;
         }
         const beforeDoc = parse(source, fmt);
-        const afterDoc = parse(diffAfter, detectFormat(diffAfter));
+        const afterFmt = format === "auto" ? detectFormat(diffAfter) : fmt;
+        const afterDoc = parse(diffAfter, afterFmt);
         const patch = generatePatch(beforeDoc, afterDoc);
         setOutput(JSON.stringify(patch, null, 2));
         return;

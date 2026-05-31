@@ -1,4 +1,9 @@
-import { applyPatch, compare, validate, type Operation } from "fast-json-patch";
+import {
+  applyPatch as applyJsonPatchOps,
+  compare,
+  validate,
+  type Operation,
+} from "fast-json-patch";
 import type { Doc, JsonPatchOperation, MergeResult, MergeStrategy } from "./types.js";
 import { parse, serialize } from "./parse.js";
 import * as jsonFmt from "./formats/json.js";
@@ -23,19 +28,46 @@ function updateDocJson(doc: Doc, json: unknown): Doc {
   }
 }
 
+/** Apply RFC 6902 JSON Patch array, a single op object, or a merge-patch object */
+export function applyPatchDocument(doc: Doc, patch: unknown): Doc {
+  if (patch === null || patch === undefined) {
+    throw new Error("Patch cannot be null or undefined");
+  }
+  if (Array.isArray(patch)) {
+    if (patch.length === 0) return applyJsonPatch(doc, []);
+    const isOps = patch.every(
+      (p) =>
+        p !== null &&
+        typeof p === "object" &&
+        typeof (p as JsonPatchOperation).op === "string" &&
+        typeof (p as JsonPatchOperation).path === "string",
+    );
+    if (isOps) return applyJsonPatch(doc, patch as JsonPatchOperation[]);
+    throw new Error("JSON Patch array must contain objects with op and path fields");
+  }
+  if (typeof patch === "object") {
+    const obj = patch as JsonPatchOperation;
+    if (typeof obj.op === "string" && typeof obj.path === "string") {
+      return applyJsonPatch(doc, [obj]);
+    }
+    return applyMergePatch(doc, patch);
+  }
+  throw new Error("Patch must be a JSON array or object");
+}
+
 export function applyJsonPatch(doc: Doc, patch: JsonPatchOperation[]): Doc {
   const errors = validate(patch as Operation[], cloneJson(doc.json));
   if (errors) {
     throw new Error(errors.message ?? "Invalid JSON Patch");
   }
-  const result = applyPatch(cloneJson(doc.json), patch as Operation[], true, false).newDocument;
+  const result = applyJsonPatchOps(cloneJson(doc.json), patch as Operation[], true, false).newDocument;
   return updateDocJson(doc, result);
 }
 
 export function applyMergePatch(doc: Doc, patch: unknown): Doc {
   const base = cloneJson(doc.json) as Record<string, unknown>;
   if (patch === null) {
-    return updateDocJson(doc, {});
+    throw new Error("Merge patch cannot be null (would erase the entire document)");
   }
   if (typeof patch !== "object" || Array.isArray(patch)) {
     throw new Error("Merge patch must be an object or null");

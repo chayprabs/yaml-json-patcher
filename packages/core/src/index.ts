@@ -13,6 +13,7 @@ export type {
 export { parse, serialize, validateSyntax, roundTrip, detectFormat, normalizeFormat } from "./parse.js";
 export { query } from "./query.js";
 export {
+  applyPatchDocument,
   applyJsonPatch,
   applyMergePatch,
   generatePatch,

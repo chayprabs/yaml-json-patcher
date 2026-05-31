@@ -7,10 +7,18 @@ export interface XmlAst {
   value: unknown;
 }
 
+/** Preserve order/comments for round-trip serialization */
 const PARSER_OPTS = {
   ignoreAttributes: false,
   preserveOrder: true,
   commentPropName: "#comment",
+  trimValues: false,
+} as const;
+
+/** Plain object tree for query engines (JSONPath, jq, etc.) */
+const PARSER_JSON_OPTS = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
   trimValues: false,
 } as const;
 
@@ -25,9 +33,11 @@ const BUILDER_OPTS = {
 export function parseXml(input: string): { ast: XmlAst; json: unknown } {
   const parser = new XMLParser(PARSER_OPTS);
   const value = parser.parse(input);
+  const jsonParser = new XMLParser(PARSER_JSON_OPTS);
+  const json = jsonParser.parse(input);
   return {
     ast: { kind: "xml", source: input, value },
-    json: orderedToPlain(value),
+    json,
   };
 }
 
@@ -52,33 +62,6 @@ export function validateXml(input: string): ParseError[] {
 
 export function updateXmlAst(ast: XmlAst, json: unknown): XmlAst {
   return { kind: "xml", source: ast.source, value: plainToOrdered(json) };
-}
-
-/** Convert preserveOrder array tree to plain JSON-like object */
-function orderedToPlain(nodes: unknown): unknown {
-  if (!Array.isArray(nodes)) return nodes;
-  const result: Record<string, unknown> = {};
-  for (const node of nodes) {
-    if (typeof node !== "object" || node === null) continue;
-    const entries = Object.entries(node as Record<string, unknown>);
-    for (const [key, val] of entries) {
-      if (key === "#comment") continue;
-      if (key === ":@") continue;
-      const plain = Array.isArray(val) ? orderedChildren(val) : val;
-      if (key in result) {
-        const existing = result[key];
-        result[key] = Array.isArray(existing) ? [...existing, plain] : [existing, plain];
-      } else {
-        result[key] = plain;
-      }
-    }
-  }
-  return result;
-}
-
-function orderedChildren(nodes: unknown[]): unknown {
-  if (nodes.length === 1) return orderedToPlain(nodes);
-  return nodes.map((n) => orderedToPlain([n]));
 }
 
 function plainToOrdered(json: unknown): unknown {

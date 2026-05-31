@@ -56,28 +56,31 @@ export function ConfigPlayground() {
   };
 
   useEffect(() => {
-    const applyHash = () => {
+    const tryApplyHash = (): boolean => {
       const hash = window.location.hash.slice(1);
       if (!hash) return false;
+      const decompressed = decompressFromEncodedURIComponent(hash);
+      if (!decompressed) return false;
       try {
-        applySharePayload(JSON.parse(decompressFromEncodedURIComponent(hash) ?? "{}"));
+        const data = JSON.parse(decompressed) as Record<string, unknown>;
+        if (Object.keys(data).length === 0) return false;
+        applySharePayload(data);
         return true;
       } catch {
         return false;
       }
     };
 
-    if (applyHash()) return;
+    const onReady = () => {
+      if (tryApplyHash()) return;
+      if (useAppStore.getState().source.trim()) setShowRestore(true);
+    };
 
-    const unsub = useAppStore.persist.onFinishHydration(() => {
-      if (!window.location.hash.slice(1) && useAppStore.getState().source) {
-        setShowRestore(true);
-      }
-    });
-    if (useAppStore.persist.hasHydrated() && useAppStore.getState().source) {
-      setShowRestore(true);
+    if (useAppStore.persist.hasHydrated()) {
+      onReady();
+      return;
     }
-    return unsub;
+    return useAppStore.persist.onFinishHydration(onReady);
   }, []);
 
   useEffect(() => {
@@ -116,8 +119,8 @@ export function ConfigPlayground() {
   };
 
   const clearAll = () => {
-    void useAppStore.persist.clearStorage();
     store.resetAll();
+    void useAppStore.persist.clearStorage();
   };
 
   const restoreSession = () => {
