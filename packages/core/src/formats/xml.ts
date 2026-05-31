@@ -1,4 +1,4 @@
-import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
 import type { ParseError } from "../types.js";
 
 export interface XmlAst {
@@ -51,13 +51,17 @@ export function serializeXml(ast: XmlAst): string {
 }
 
 export function validateXml(input: string): ParseError[] {
-  try {
-    const parser = new XMLParser(PARSER_OPTS);
-    parser.parse(input);
-    return [];
-  } catch (err) {
-    return [{ line: 1, column: 1, message: err instanceof Error ? err.message : String(err) }];
-  }
+  if (!input.trim()) return [];
+  const result = XMLValidator.validate(input);
+  if (result === true) return [];
+  const err = result as { err: { line: number; col: number; msg: string } };
+  return [
+    {
+      line: err.err.line ?? 1,
+      column: err.err.col ?? 1,
+      message: err.err.msg ?? "Invalid XML",
+    },
+  ];
 }
 
 export function updateXmlAst(ast: XmlAst, json: unknown): XmlAst {

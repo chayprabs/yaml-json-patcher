@@ -111,4 +111,9 @@ describe("web UI trace — diff mode", () => {
     expect(diff).toContain("+X");
     expect(diff).not.toMatch(/^-b$/m);
   });
+
+  it("unifiedDiff hunk header uses correct line numbers for insertions", () => {
+    const diff = unifiedDiff("a", "a\nb");
+    expect(diff).toContain("@@ -1,0 +2,1 @@");
+  });
 });

@@ -55,7 +55,17 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       ...defaultState,
-      setMode: (mode) => set({ mode }),
+      setMode: (mode) =>
+        set((s) => {
+          if (mode === "merge") {
+            const mergeSources = [...s.mergeSources];
+            if (s.source.trim() && !mergeSources[0]?.trim()) {
+              mergeSources[0] = s.source;
+            }
+            return { mode, mergeSources, conflicts: [] };
+          }
+          return { mode, conflicts: mode === s.mode ? s.conflicts : [] };
+        }),
       setEngine: (engine) => set({ engine }),
       setFormat: (format) => set({ format }),
       setSource: (source) => set({ source }),

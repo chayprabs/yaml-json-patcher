@@ -7,6 +7,7 @@ import {
   parse,
   query,
   serialize,
+  serializeTo,
   validateSyntax,
   validateWithSchema,
   type Format,
@@ -53,6 +54,18 @@ export function useEvaluate() {
       const fmt = format === "auto" ? detectFormat(source) : (format as Format);
 
       if (mode === "query") {
+        const path = window.location.pathname;
+        if (path === "/json-to-yaml" && source.trim()) {
+          const doc = parse(source, fmt);
+          setOutput(serializeTo(doc, "yaml"));
+          return;
+        }
+        if (path === "/yaml-to-json" && source.trim()) {
+          const inputFmt = format === "auto" ? detectFormat(source) : fmt;
+          const doc = parse(source, inputFmt === "yaml" ? "yaml" : inputFmt);
+          setOutput(serializeTo(doc, "json"));
+          return;
+        }
         const doc = parse(source, fmt);
         const result = await query(doc, engine, expression);
         if (!result.ok) {

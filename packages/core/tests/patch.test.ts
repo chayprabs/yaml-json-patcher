@@ -103,6 +103,11 @@ describe("F3 patch and merge", () => {
     expect(errors[0]!.message).toMatch(/bracket/i);
   });
 
+  it("validateSyntax reports malformed XML", () => {
+    const errors = validateSyntax("<root><unclosed>", "xml");
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
   it("validateWithSchema accepts valid document against schema", () => {
     const doc = parse(loadSample("package.json"), "json");
     const schema = JSON.stringify({

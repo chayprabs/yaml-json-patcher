@@ -18,9 +18,17 @@ export function unifiedDiff(before: string, after: string, label = "config"): st
     }
     const oldCount = chunk.filter((c) => c.type === "remove").length;
     const newCount = chunk.filter((c) => c.type === "add").length;
-    const oldStart = chunk.find((c) => c.type === "remove")?.oldIndex ?? start;
-    const newStart = chunk.find((c) => c.type === "add")?.newIndex ?? start;
-    hunks.push(`@@ -${oldStart + 1},${oldCount} +${newStart + 1},${newCount} @@`);
+    const linesBeforeOld = countLinesBefore(ops, start, "before");
+    const linesBeforeNew = countLinesBefore(ops, start, "after");
+    const oldStartLine =
+      oldCount === 0
+        ? Math.max(linesBeforeOld, 1)
+        : (chunk.find((c) => c.type === "remove")!.oldIndex ?? 0) + 1;
+    const newStartLine =
+      newCount === 0
+        ? Math.max(linesBeforeNew, 1)
+        : (chunk.find((c) => c.type === "add")!.newIndex ?? 0) + 1;
+    hunks.push(`@@ -${oldStartLine},${oldCount} +${newStartLine},${newCount} @@`);
     for (const c of chunk) {
       if (c.type === "remove") hunks.push(`-${c.line}`);
       if (c.type === "add") hunks.push(`+${c.line}`);
@@ -54,6 +62,23 @@ type DiffOp =
   | { type: "equal"; line: string }
   | { type: "remove"; line: string; oldIndex: number }
   | { type: "add"; line: string; newIndex: number };
+
+function countLinesBefore(ops: DiffOp[], index: number, side: "before" | "after"): number {
+  let beforeLines = 0;
+  let afterLines = 0;
+  for (let k = 0; k < index; k++) {
+    const op = ops[k]!;
+    if (op.type === "equal") {
+      beforeLines++;
+      afterLines++;
+    } else if (op.type === "remove") {
+      beforeLines++;
+    } else {
+      afterLines++;
+    }
+  }
+  return side === "before" ? beforeLines : afterLines;
+}
 
 function diffLines(before: string[], after: string[]): DiffOp[] {
   const n = before.length;

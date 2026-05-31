@@ -89,10 +89,6 @@ export function ConfigPlayground() {
         e.preventDefault();
         void run();
       }
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
-        e.preventDefault();
-        localStorage.setItem("configshape-draft", store.source);
-      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -121,10 +117,7 @@ export function ConfigPlayground() {
   const clearAll = () => {
     store.resetAll();
     void useAppStore.persist.clearStorage();
-  };
-
-  const restoreSession = () => {
-    setShowRestore(false);
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
   };
 
   const onSample = (key: string) => {
@@ -139,11 +132,12 @@ export function ConfigPlayground() {
     <div className="flex flex-1 flex-col">
       {showRestore && (
         <div className="border-b border-blue-100 bg-blue-50 px-4 py-2 text-center text-sm text-blue-900">
-          Restore last session?{" "}
-          <button type="button" className="font-medium underline" onClick={restoreSession}>
-            Restore
-          </button>{" "}
-          <button type="button" className="text-blue-700 underline" onClick={() => setShowRestore(false)}>
+          Continuing from your last session on this device.
+          <button
+            type="button"
+            className="ml-2 text-blue-700 underline"
+            onClick={() => setShowRestore(false)}
+          >
             Dismiss
           </button>
         </div>

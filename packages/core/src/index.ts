@@ -10,7 +10,15 @@ export type {
   QueryResult,
 } from "./types.js";
 
-export { parse, serialize, validateSyntax, roundTrip, detectFormat, normalizeFormat } from "./parse.js";
+export {
+  parse,
+  serialize,
+  serializeTo,
+  validateSyntax,
+  roundTrip,
+  detectFormat,
+  normalizeFormat,
+} from "./parse.js";
 export { query } from "./query.js";
 export {
   applyPatchDocument,

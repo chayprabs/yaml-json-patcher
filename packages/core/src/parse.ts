@@ -28,15 +28,41 @@ export function parse(input: string, format?: Format): Doc {
 }
 
 export function serialize(doc: Doc): string {
-  switch (doc.format) {
-    case "json":
-      return jsonFmt.serializeJson(doc.ast as jsonFmt.JsonAst);
-    case "yaml":
-      return yamlFmt.serializeYaml(doc.ast as yamlFmt.YamlAst);
-    case "toml":
-      return tomlFmt.serializeToml(doc.ast as tomlFmt.TomlAst);
-    case "xml":
-      return xmlFmt.serializeXml(doc.ast as xmlFmt.XmlAst);
+  return serializeTo(doc, doc.format);
+}
+
+/** Serialize document content to a different output format */
+export function serializeTo(doc: Doc, targetFormat: Format): string {
+  if (doc.format === targetFormat) {
+    switch (targetFormat) {
+      case "json":
+        return jsonFmt.serializeJson(doc.ast as jsonFmt.JsonAst);
+      case "yaml":
+        return yamlFmt.serializeYaml(doc.ast as yamlFmt.YamlAst);
+      case "toml":
+        return tomlFmt.serializeToml(doc.ast as tomlFmt.TomlAst);
+      case "xml":
+        return xmlFmt.serializeXml(doc.ast as xmlFmt.XmlAst);
+    }
+  }
+  switch (targetFormat) {
+    case "json": {
+      const text = JSON.stringify(doc.json, null, 2);
+      return text.endsWith("\n") ? text : `${text}\n`;
+    }
+    case "yaml": {
+      const { ast } = yamlFmt.parseYaml("{}\n");
+      return yamlFmt.serializeYaml(yamlFmt.updateYamlJson(ast, doc.json));
+    }
+    case "toml": {
+      const { ast } = tomlFmt.parseToml("");
+      return tomlFmt.serializeToml(tomlFmt.updateTomlAst(ast, doc.json as tomlFmt.TomlAst["value"]));
+    }
+    case "xml": {
+      const wrapped = { root: doc.json };
+      const { ast } = xmlFmt.parseXml("<root/>");
+      return xmlFmt.serializeXml(xmlFmt.updateXmlAst(ast, wrapped));
+    }
   }
 }
 
