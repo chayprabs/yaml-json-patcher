@@ -1,0 +1,23 @@
+{
+  "name": "@configshape/cli",
+  "version": "0.1.0",
+  "description": "CLI for ConfigShape — query and patch configs from the terminal",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "configshape": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --target node22",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@configshape/yaml-json-patcher": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}

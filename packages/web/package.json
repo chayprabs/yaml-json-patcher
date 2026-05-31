@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:singlefile": "SINGLEFILE=1 vite build",
-    "lint": "echo lint ok",
+    "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },

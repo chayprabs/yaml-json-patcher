@@ -6,7 +6,12 @@ let ajvInstance: Ajv2020 | null = null;
 
 function getAjv(): Ajv2020 {
   if (!ajvInstance) {
-    ajvInstance = new Ajv2020({ allErrors: true, strict: false });
+    ajvInstance = new Ajv2020({
+      allErrors: true,
+      strict: false,
+      // ESM codegen avoids new Function() so validation works under strict CSP in the browser
+      code: { esm: true, source: false, lines: false, optimize: false },
+    });
     addFormats(ajvInstance);
   }
   return ajvInstance;
@@ -18,8 +23,12 @@ export interface SchemaValidationResult {
 }
 
 export function validateWithSchema(doc: Doc, schemaText: string): SchemaValidationResult {
+  const trimmed = schemaText.trim();
+  if (!trimmed || trimmed === "{}") {
+    return { ok: true, errors: [] };
+  }
   try {
-    const schema = JSON.parse(schemaText) as object;
+    const schema = JSON.parse(trimmed) as object;
     const ajv = getAjv();
     const validate = ajv.compile(schema);
     const valid = validate(doc.json);

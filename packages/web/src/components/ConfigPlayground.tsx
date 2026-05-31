@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CommandPalette } from "./CommandPalette";
 import { Copy, Download, Play, Share2, Trash2 } from "lucide-react";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { detectFormat } from "@configshape/yaml-json-patcher";
@@ -39,6 +40,7 @@ export function ConfigPlayground() {
   const store = useAppStore();
   const { run } = useEvaluate();
   const [showRestore, setShowRestore] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [sampleKey, setSampleKey] = useState("");
   const detected = store.source.trim() ? detectFormat(store.source) : "yaml";
 
@@ -85,6 +87,10 @@ export function ConfigPlayground() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
         void run();
@@ -92,7 +98,7 @@ export function ConfigPlayground() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [run, store.source]);
+  }, [run]);
 
   const share = () => {
     const s = useAppStore.getState();
@@ -130,6 +136,7 @@ export function ConfigPlayground() {
 
   return (
     <div className="flex flex-1 flex-col">
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       {showRestore && (
         <div className="border-b border-blue-100 bg-blue-50 px-4 py-2 text-center text-sm text-blue-900">
           Continuing from your last session on this device.

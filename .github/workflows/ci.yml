@@ -18,7 +18,9 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - run: pnpm test:coverage
       - run: pnpm --filter @configshape/yaml-json-patcher size-limit
+      - run: pnpm --filter @configshape/cli build
       - run: pnpm build
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps

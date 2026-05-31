@@ -16,6 +16,12 @@ import {
 import { useAppStore } from "../store";
 
 const DEBOUNCE_MS = 150;
+const WARN_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
+
+function inputBytes(...parts: string[]): number {
+  return new TextEncoder().encode(parts.join("")).length;
+}
 
 function formatQueryOutput(value: unknown): string {
   if (value === undefined) return "null";
@@ -45,6 +51,20 @@ export function useEvaluate() {
     } = useAppStore.getState();
 
     clearLogs();
+
+    const bytes =
+      mode === "merge"
+        ? Math.max(...mergeSources.map((s) => inputBytes(s)), inputBytes(source))
+        : inputBytes(source);
+    if (bytes > MAX_BYTES) {
+      addLog(`Input exceeds 50 MB limit (${(bytes / 1024 / 1024).toFixed(1)} MB).`);
+      setOutput("");
+      return;
+    }
+    if (bytes > WARN_BYTES) {
+      addLog(`Large input (${(bytes / 1024 / 1024).toFixed(1)} MB) — processing may be slow.`);
+    }
+
     if (!source.trim() && mode !== "merge") {
       setOutput("");
       return;

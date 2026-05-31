@@ -1,13 +1,15 @@
 {
   "name": "configshape",
+  "type": "module",
   "private": true,
   "description": "Query and patch YAML, JSON, TOML and XML configs in your browser",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm --filter @configshape/yaml-json-patcher build && pnpm --filter @configshape/web build",
+    "build": "pnpm --filter @configshape/yaml-json-patcher build && pnpm --filter @configshape/web build && pnpm --filter @configshape/cli build",
+    "lint": "eslint . && pnpm -r run lint",
+    "test:coverage": "pnpm --filter @configshape/yaml-json-patcher test:coverage",
     "build:singlefile": "pnpm --filter @configshape/yaml-json-patcher build && pnpm --filter @configshape/web build:singlefile",
     "dev": "pnpm --filter @configshape/web dev",
-    "lint": "pnpm -r run lint",
     "test": "pnpm --filter @configshape/yaml-json-patcher test",
     "test:e2e": "playwright test",
     "typecheck": "pnpm --filter @configshape/yaml-json-patcher build && pnpm -r run typecheck"
@@ -18,6 +20,9 @@
   },
   "packageManager": "pnpm@9.15.0",
   "devDependencies": {
-    "@playwright/test": "^1.52.0"
+    "@eslint/js": "^9.28.0",
+    "@playwright/test": "^1.52.0",
+    "eslint": "^9.28.0",
+    "typescript-eslint": "^8.33.0"
   }
 }

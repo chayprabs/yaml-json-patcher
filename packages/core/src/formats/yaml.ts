@@ -1,4 +1,4 @@
-import { parseDocument, parseAllDocuments, Document } from "yaml";
+import { parseAllDocuments, Document } from "yaml";
 import type { ParseError } from "../types.js";
 
 export interface YamlAst {
