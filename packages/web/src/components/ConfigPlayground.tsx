@@ -42,22 +42,42 @@ export function ConfigPlayground() {
   const [sampleKey, setSampleKey] = useState("");
   const detected = store.source.trim() ? detectFormat(store.source) : "yaml";
 
+  const applySharePayload = (data: Record<string, unknown>) => {
+    if (typeof data.source === "string") store.setSource(data.source);
+    if (typeof data.expression === "string") store.setExpression(data.expression);
+    if (typeof data.patchText === "string") store.setPatchText(data.patchText);
+    if (typeof data.schemaText === "string") store.setSchemaText(data.schemaText);
+    if (typeof data.diffAfter === "string") store.setDiffAfter(data.diffAfter);
+    if (Array.isArray(data.mergeSources)) store.setMergeSources(data.mergeSources as string[]);
+    if (typeof data.mergeStrategy === "string") store.setMergeStrategy(data.mergeStrategy as typeof store.mergeStrategy);
+    if (typeof data.format === "string") store.setFormat(data.format as typeof store.format);
+    if (typeof data.mode === "string") store.setMode(data.mode as Mode);
+    if (typeof data.engine === "string") store.setEngine(data.engine as typeof store.engine);
+  };
+
   useEffect(() => {
-    const hash = window.location.hash.slice(1);
-    if (hash) {
+    const applyHash = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return false;
       try {
-        const data = JSON.parse(decompressFromEncodedURIComponent(hash) ?? "{}");
-        if (data.source) store.setSource(data.source);
-        if (data.expression) store.setExpression(data.expression);
-        if (data.mode) store.setMode(data.mode);
-        if (data.engine) store.setEngine(data.engine);
+        applySharePayload(JSON.parse(decompressFromEncodedURIComponent(hash) ?? "{}"));
+        return true;
       } catch {
-        /* ignore */
+        return false;
       }
-    } else {
-      const saved = localStorage.getItem("configshape-session");
-      if (saved && !store.source) setShowRestore(true);
+    };
+
+    if (applyHash()) return;
+
+    const unsub = useAppStore.persist.onFinishHydration(() => {
+      if (!window.location.hash.slice(1) && useAppStore.getState().source) {
+        setShowRestore(true);
+      }
+    });
+    if (useAppStore.persist.hasHydrated() && useAppStore.getState().source) {
+      setShowRestore(true);
     }
+    return unsub;
   }, []);
 
   useEffect(() => {
@@ -76,12 +96,19 @@ export function ConfigPlayground() {
   }, [run, store.source]);
 
   const share = () => {
+    const s = useAppStore.getState();
     const payload = compressToEncodedURIComponent(
       JSON.stringify({
-        source: store.source,
-        expression: store.expression,
-        mode: store.mode,
-        engine: store.engine,
+        source: s.source,
+        expression: s.expression,
+        patchText: s.patchText,
+        schemaText: s.schemaText,
+        diffAfter: s.diffAfter,
+        mergeSources: s.mergeSources,
+        mergeStrategy: s.mergeStrategy,
+        format: s.format,
+        mode: s.mode,
+        engine: s.engine,
       }),
     );
     window.location.hash = payload;
@@ -89,23 +116,11 @@ export function ConfigPlayground() {
   };
 
   const clearAll = () => {
-    localStorage.clear();
-    store.setSource("");
-    store.setOutput("");
-    store.setConflicts([]);
-    store.clearLogs();
+    void useAppStore.persist.clearStorage();
+    store.resetAll();
   };
 
   const restoreSession = () => {
-    const raw = localStorage.getItem("configshape-session");
-    if (raw) {
-      try {
-        const data = JSON.parse(raw);
-        if (data.state?.source) store.setSource(data.state.source);
-      } catch {
-        /* ignore */
-      }
-    }
     setShowRestore(false);
   };
 

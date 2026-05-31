@@ -32,29 +32,31 @@ export interface AppState {
   setOutput: (output: string) => void;
   addLog: (msg: string) => void;
   clearLogs: () => void;
+  resetAll: () => void;
 }
+
+const defaultState = {
+  mode: "query" as Mode,
+  engine: "jq" as Engine,
+  format: "auto" as Format | "auto",
+  source: "",
+  mergeSources: ["", ""],
+  expression: "",
+  patchText: "[]",
+  schemaText: "{}",
+  diffAfter: "",
+  mergeStrategy: "deep" as MergeStrategy,
+  conflicts: [] as MergeConflict[],
+  output: "",
+  logs: [] as string[],
+};
 
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      mode: "query",
-      engine: (localStorage.getItem("configshape-engine") as Engine) ?? "jq",
-      format: "auto",
-      source: "",
-      mergeSources: ["", ""],
-      expression: "",
-      patchText: "[]",
-      schemaText: "{}",
-      diffAfter: "",
-      mergeStrategy: "deep",
-      conflicts: [],
-      output: "",
-      logs: [],
+      ...defaultState,
       setMode: (mode) => set({ mode }),
-      setEngine: (engine) => {
-        localStorage.setItem("configshape-engine", engine);
-        set({ engine });
-      },
+      setEngine: (engine) => set({ engine }),
       setFormat: (format) => set({ format }),
       setSource: (source) => set({ source }),
       setMergeSources: (mergeSources) => set({ mergeSources }),
@@ -67,6 +69,7 @@ export const useAppStore = create<AppState>()(
       setOutput: (output) => set({ output }),
       addLog: (msg) => set((s) => ({ logs: [...s.logs.slice(-50), msg] })),
       clearLogs: () => set({ logs: [] }),
+      resetAll: () => set({ ...defaultState, logs: [] }),
     }),
     {
       name: "configshape-session",
@@ -74,6 +77,11 @@ export const useAppStore = create<AppState>()(
         source: s.source,
         expression: s.expression,
         patchText: s.patchText,
+        schemaText: s.schemaText,
+        diffAfter: s.diffAfter,
+        mergeSources: s.mergeSources,
+        mergeStrategy: s.mergeStrategy,
+        format: s.format,
         mode: s.mode,
         engine: s.engine,
       }),

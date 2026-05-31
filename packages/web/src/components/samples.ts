@@ -37,21 +37,29 @@ export async function loadSample(key: string, store: AppState) {
     case "pyproject": {
       store.setSource(await fetchText("pyproject.toml"));
       store.setMode("query");
+      store.setExpression("[project]");
+      store.setEngine("jsonpath");
       break;
     }
     case "compose": {
       store.setSource(await fetchText("docker-compose.yml"));
       store.setMode("query");
+      store.setExpression("$.services");
+      store.setEngine("jsonpath");
       break;
     }
     case "cargo": {
       store.setSource(await fetchText("Cargo.toml"));
       store.setMode("query");
+      store.setExpression("[package]");
+      store.setEngine("jsonpath");
       break;
     }
     case "atom": {
       store.setSource(await fetchText("atom-feed.xml"));
       store.setMode("query");
+      store.setExpression("$.feed.entry[*].title");
+      store.setEngine("jsonpath");
       break;
     }
   }

@@ -11,15 +11,16 @@ export function ConflictResolver() {
   if (conflicts.length === 0) return null;
 
   const resolve = (path: string, choice: "base" | "incoming" | number) => {
-    const base = parse(source, detectFormat(source));
+    const output = useAppStore.getState().output;
+    const fmt = output.trim() ? detectFormat(output) : detectFormat(source);
+    const base = parse(output.trim() || source, fmt);
     const resolutions: Record<string, unknown> = {};
-    for (const c of conflicts) {
-      if (c.path !== path) continue;
-      if (choice === "base") resolutions[c.path] = c.values[0];
-      else if (choice === "incoming") resolutions[c.path] = c.values[1];
-      else resolutions[c.path] = c.values[choice] ?? c.values[c.pickedIndex];
-    }
-    const merged = applyConflictResolution(base, conflicts, resolutions);
+    const conflict = conflicts.find((c) => c.path === path);
+    if (!conflict) return;
+    if (choice === "base") resolutions[path] = conflict.values[0];
+    else if (choice === "incoming") resolutions[path] = conflict.values[1];
+    else resolutions[path] = conflict.values[choice] ?? conflict.values[conflict.pickedIndex];
+    const merged = applyConflictResolution(base, [conflict], resolutions);
     setOutput(serialize(merged));
     setConflicts(conflicts.filter((c) => c.path !== path));
   };

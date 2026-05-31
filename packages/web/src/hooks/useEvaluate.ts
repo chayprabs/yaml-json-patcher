@@ -34,6 +34,7 @@ export function useEvaluate() {
       mergeSources,
       mergeStrategy,
       setOutput,
+      setConflicts,
       addLog,
       clearLogs,
     } = useAppStore.getState();
@@ -73,6 +74,8 @@ export function useEvaluate() {
         const docs = mergeSources.filter((s) => s.trim()).map((s) => parse(s, detectFormat(s)));
         if (docs.length < 2) {
           addLog("Merge requires at least two inputs");
+          setOutput("");
+          setConflicts([]);
           return;
         }
         const result = mergeDocs(docs, mergeStrategy);
@@ -89,8 +92,15 @@ export function useEvaluate() {
       }
 
       if (mode === "validate") {
-        const doc = parse(source, fmt);
         const syntaxErrors = validateSyntax(source, fmt);
+        let doc;
+        try {
+          doc = parse(source, fmt);
+        } catch {
+          setOutput(syntaxErrors.map((e) => `L${e.line}:${e.column} ${e.message}`).join("\n") || "Invalid document");
+          syntaxErrors.forEach((e) => addLog(e.message));
+          return;
+        }
         const schemaResult = validateWithSchema(doc, schemaText);
         const all = [...syntaxErrors, ...schemaResult.errors];
         if (all.length === 0) {
