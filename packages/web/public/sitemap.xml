@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>/jq-online</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/yq-online</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/jsonpath-online</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/jmespath-online</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/json-patch-online</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/yaml-to-json</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/json-to-yaml</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/k8s-yaml-query</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

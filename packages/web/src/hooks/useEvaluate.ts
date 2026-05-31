@@ -3,6 +3,7 @@ import {
   applyJsonPatch,
   applyMergePatch,
   detectFormat,
+  generatePatch,
   mergeDocs,
   parse,
   query,
@@ -10,6 +11,7 @@ import {
   validateSyntax,
   validateWithSchema,
   type Format,
+  type MergeConflict,
 } from "@configshape/yaml-json-patcher";
 import { useAppStore } from "../store";
 
@@ -28,6 +30,7 @@ export function useEvaluate() {
       expression,
       patchText,
       schemaText,
+      diffAfter,
       mergeSources,
       mergeStrategy,
       setOutput,
@@ -74,9 +77,12 @@ export function useEvaluate() {
         }
         const result = mergeDocs(docs, mergeStrategy);
         if (result.merged) {
+          useAppStore.getState().setConflicts(result.conflicts);
           setOutput(serialize(result.merged));
           if (result.conflicts.length) {
-            addLog(`${result.conflicts.length} conflict(s): ${result.conflicts.map((c) => c.path).join(", ")}`);
+            addLog(
+              `${result.conflicts.length} conflict(s): ${result.conflicts.map((c: MergeConflict) => c.path).join(", ")}`,
+            );
           }
         }
         return;
@@ -93,6 +99,18 @@ export function useEvaluate() {
           setOutput(all.map((e) => `L${e.line}:${e.column} ${e.message}`).join("\n"));
           all.forEach((e) => addLog(e.message));
         }
+        return;
+      }
+
+      if (mode === "diff") {
+        if (!diffAfter.trim()) {
+          addLog("Paste an “after” document to generate a patch");
+          return;
+        }
+        const beforeDoc = parse(source, fmt);
+        const afterDoc = parse(diffAfter, detectFormat(diffAfter));
+        const patch = generatePatch(beforeDoc, afterDoc);
+        setOutput(JSON.stringify(patch, null, 2));
         return;
       }
 
@@ -118,6 +136,7 @@ export function useEvaluate() {
     state.expression,
     state.patchText,
     state.schemaText,
+    state.diffAfter,
     state.mergeSources,
     state.mergeStrategy,
     run,

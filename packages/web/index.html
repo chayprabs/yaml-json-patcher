@@ -7,8 +7,38 @@
       name="description"
       content="Query and patch YAML, JSON, TOML and XML configs in your browser with jq, JSONPath, JMESPath and JSON Patch - comments preserved."
     />
-    <title>ConfigShape — YAML, JSON, TOML & XML config playground</title>
+    <meta property="og:title" content="ConfigShape — browser config playground" />
+    <meta
+      property="og:description"
+      content="Query and patch YAML, JSON, TOML and XML in your browser. jq, JSONPath, JMESPath, JSON Patch — files never leave your device."
+    />
+    <meta property="og:type" content="website" />
+    <title>ConfigShape — YAML, JSON, TOML &amp; XML config playground</title>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does ConfigShape upload my config files?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Processing runs entirely in your browser after the app loads."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which formats are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "JSON, YAML, TOML, and XML with comment and key-order preservation where possible."
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

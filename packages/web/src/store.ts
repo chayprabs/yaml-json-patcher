@@ -1,4 +1,4 @@
-import type { Engine, Format, MergeStrategy } from "@configshape/yaml-json-patcher";
+import type { Engine, Format, MergeConflict, MergeStrategy } from "@configshape/yaml-json-patcher";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -13,10 +13,11 @@ export interface AppState {
   expression: string;
   patchText: string;
   schemaText: string;
+  diffAfter: string;
   mergeStrategy: MergeStrategy;
+  conflicts: MergeConflict[];
   output: string;
   logs: string[];
-  theme: "light" | "dark";
   setMode: (mode: Mode) => void;
   setEngine: (engine: Engine) => void;
   setFormat: (format: Format | "auto") => void;
@@ -25,11 +26,12 @@ export interface AppState {
   setExpression: (expr: string) => void;
   setPatchText: (text: string) => void;
   setSchemaText: (text: string) => void;
+  setDiffAfter: (text: string) => void;
   setMergeStrategy: (strategy: MergeStrategy) => void;
+  setConflicts: (conflicts: MergeConflict[]) => void;
   setOutput: (output: string) => void;
   addLog: (msg: string) => void;
   clearLogs: () => void;
-  toggleTheme: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -43,10 +45,11 @@ export const useAppStore = create<AppState>()(
       expression: "",
       patchText: "[]",
       schemaText: "{}",
+      diffAfter: "",
       mergeStrategy: "deep",
+      conflicts: [],
       output: "",
       logs: [],
-      theme: "dark",
       setMode: (mode) => set({ mode }),
       setEngine: (engine) => {
         localStorage.setItem("configshape-engine", engine);
@@ -58,16 +61,12 @@ export const useAppStore = create<AppState>()(
       setExpression: (expression) => set({ expression }),
       setPatchText: (patchText) => set({ patchText }),
       setSchemaText: (schemaText) => set({ schemaText }),
+      setDiffAfter: (diffAfter) => set({ diffAfter }),
       setMergeStrategy: (mergeStrategy) => set({ mergeStrategy }),
+      setConflicts: (conflicts) => set({ conflicts }),
       setOutput: (output) => set({ output }),
       addLog: (msg) => set((s) => ({ logs: [...s.logs.slice(-50), msg] })),
       clearLogs: () => set({ logs: [] }),
-      toggleTheme: () =>
-        set((s) => {
-          const theme = s.theme === "dark" ? "light" : "dark";
-          document.documentElement.classList.toggle("dark", theme === "dark");
-          return { theme };
-        }),
     }),
     {
       name: "configshape-session",

@@ -29,7 +29,7 @@ The end user will paste one tool's full section into your context. You
 will also receive:
 
 - The repo URL (`https://github.com/chayprabs/yaml-json-patcher`).
-- The hosted URL (`https://<tool>.Standalone Tool Portfolio`).
+- The hosted URL (your static deployment, e.g. Cloudflare Pages).
 - The relevant product requirements file path (`prds/N_<tool>.md`).
 - The universal context file (`IMPLEMENTATION_HANDOFF.md`).
 
@@ -88,7 +88,7 @@ that tool's section will say so explicitly.
   `IMPLEMENTATION_HANDOFF.md` Section 4.
 - **Pattern 1 (server-side)** tools: `apps/web/` + `apps/worker/` + `docker-compose.yml`.
 - **Pattern C+D (browser-only)** tools: `packages/core/` + `packages/web/` (+ optional `packages/cli/`).
-- Hosted convention: `<tool-slug>.Standalone Tool Portfolio`; API on `api.<tool-slug>.Standalone Tool Portfolio` for server-side.
+- Hosted convention: static site per tool (e.g. `configshape.example.com`); API subdomain only for server-side tools.
 - Org-wide required files: `LICENSE`, `README.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`.
 
 ### Section structure - every tool has these 13 categories
@@ -124,7 +124,7 @@ that tool's section will say so explicitly.
 - [ ] Repo cloned.
 - [ ] Product requirements opened: `PRODUCT_REQUIREMENTS.md`.
 - [ ] `IMPLEMENTATION_HANDOFF.md` opened.
-- [ ] Hosted URL: `https://config-shape.Standalone Tool Portfolio`.
+- [ ] Hosted URL returns 200 (your deployment).
 - [ ] Sample files present in `packages/web/public/samples/`.
 - [ ] Pattern: **C+D (browser-only)** - no worker, no docker.
 

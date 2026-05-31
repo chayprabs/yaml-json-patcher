@@ -5,7 +5,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@configshape/yaml-json-patcher": ["../core/src/index.ts"]
     }
   },
   "include": ["src"],

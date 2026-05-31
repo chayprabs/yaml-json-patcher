@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { unifiedDiff, sideBySideDiff } from "@configshape/yaml-json-patcher";
+
+type DiffRow = ReturnType<typeof sideBySideDiff>[number];
 import { cn } from "../lib/utils";
 
 interface Props {
@@ -33,7 +35,7 @@ export function DiffViewer({ before, after }: Props) {
         <pre className="max-h-48 overflow-auto p-2 font-mono text-xs">{unified}</pre>
       ) : (
         <div className="grid max-h-48 grid-cols-2 overflow-auto font-mono text-xs">
-          {side.map((row) => (
+          {side.map((row: DiffRow) => (
             <div key={row.line} className={cn("contents", row.changed && "bg-yellow-500/10")}>
               <span className="border-r border-[var(--border)] px-2 py-0.5">{row.before}</span>
               <span className="px-2 py-0.5">{row.after}</span>

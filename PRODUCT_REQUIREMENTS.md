@@ -352,7 +352,7 @@ Each sample shipped with a recommended sample expression and mode.
 
 ## 14. Deployment
 
-- Hosted: Cloudflare Pages on `config-shape.Standalone Tool Portfolio`.
+- Hosted: static deploy (e.g. Cloudflare Pages, GitHub Pages).
 - npm: `@<npm-scope>/yaml-json-patcher` published on tagged release.
 - Single-file HTML release artifact attached to GitHub release.
 

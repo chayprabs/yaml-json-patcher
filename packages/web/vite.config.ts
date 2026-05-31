@@ -22,8 +22,8 @@ export default defineConfig({
         short_name: "ConfigShape",
         description:
           "Query and patch YAML, JSON, TOML and XML configs in your browser",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
         display: "standalone",
         icons: [
           {
@@ -45,6 +45,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@configshape/yaml-json-patcher": path.resolve(__dirname, "../core/src/index.ts"),
+      fs: path.resolve(__dirname, "src/shims/node-empty.ts"),
+      path: path.resolve(__dirname, "src/shims/node-empty.ts"),
+      crypto: path.resolve(__dirname, "src/shims/node-empty.ts"),
+      stream: path.resolve(__dirname, "src/shims/node-empty.ts"),
     },
   },
   build: {
@@ -53,7 +57,6 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes("jq-wasm")) return "jq-wasm";
-          if (id.includes("monaco-editor")) return "monaco";
           if (id.includes("ajv")) return "ajv";
           if (id.includes("jsonpath-plus")) return "jsonpath";
           if (id.includes("jmespath")) return "jmespath";

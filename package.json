@@ -4,15 +4,20 @@
   "description": "Query and patch YAML, JSON, TOML and XML configs in your browser",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm -r run build",
+    "build": "pnpm --filter @configshape/yaml-json-patcher build && pnpm --filter @configshape/web build",
+    "build:singlefile": "pnpm --filter @configshape/yaml-json-patcher build && pnpm --filter @configshape/web build:singlefile",
     "dev": "pnpm --filter @configshape/web dev",
     "lint": "pnpm -r run lint",
-    "test": "pnpm -r run test",
-    "typecheck": "pnpm -r run typecheck"
+    "test": "pnpm --filter @configshape/yaml-json-patcher test",
+    "test:e2e": "playwright test",
+    "typecheck": "pnpm --filter @configshape/yaml-json-patcher build && pnpm -r run typecheck"
   },
   "engines": {
     "node": ">=22",
     "pnpm": ">=9"
   },
-  "packageManager": "pnpm@9.15.0"
+  "packageManager": "pnpm@9.15.0",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
 }

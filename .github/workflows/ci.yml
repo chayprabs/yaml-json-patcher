@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, "cursor/**"]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -20,4 +20,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - run: pnpm --filter @configshape/yaml-json-patcher size-limit
       - run: pnpm build
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install chromium --with-deps
+      - run: pnpm test:e2e
